@@ -3,6 +3,7 @@ package dev.oxelab.apitest.services.impl;
 import dev.oxelab.apitest.domain.User;
 import dev.oxelab.apitest.repositories.UserRepository;
 import dev.oxelab.apitest.services.UserService;
+import dev.oxelab.apitest.services.exceptions.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +18,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findById(Integer id) {
         Optional<User> obj = repository.findById(id);
-        return obj.orElse(null);
+        return obj.orElseThrow(() -> new ObjectNotFoundException("Objeto não encontrado!"));
     }
 
 }
