@@ -3,6 +3,7 @@ package dev.oxelab.apitest.services.impl;
 import dev.oxelab.apitest.domain.User;
 import dev.oxelab.apitest.domain.dto.UserDTO;
 import dev.oxelab.apitest.repositories.UserRepository;
+import dev.oxelab.apitest.services.exceptions.DataIntegratyViolationException;
 import dev.oxelab.apitest.services.exceptions.ObjectNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,8 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -117,6 +117,18 @@ class UserServiceImplTest {
         assertEquals(NAME,response.getName());
         assertEquals(EMAIL,response.getEmail());
         assertEquals(PASSWORD,response.getPassword());
+    }
+
+    @Test
+    void whenCreateThenReturnADataIntegrityViolationException() {
+        when(repository.findByEmail(anyString())).thenReturn(optionalUser);
+        try{
+            optionalUser.get().setId(2);
+            service.create(userDTO);
+        }catch (Exception exception) {
+            assertEquals(DataIntegratyViolationException.class, exception.getClass());
+            assertEquals("E-mail já cadastrado no sistema!", exception.getMessage());
+        }
     }
 
     @Test
