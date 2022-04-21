@@ -20,7 +20,7 @@ public ResponseEntity<StandardError>objectNotFound(ObjectNotFoundException excep
 }
 
     @ExceptionHandler(DataIntegratyViolationException.class)
-    public ResponseEntity<StandardError>dataIntegratyViolationException(DataIntegratyViolationException exception, HttpServletRequest request){
+    public ResponseEntity<StandardError>dataIntegrityViolationException(DataIntegratyViolationException exception, HttpServletRequest request){
         StandardError error = new StandardError(LocalDateTime.now(), HttpStatus.BAD_REQUEST.value(),exception.getMessage(),request.getRequestURI());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
