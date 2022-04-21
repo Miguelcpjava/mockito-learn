@@ -20,7 +20,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 class UserResourceTest {
@@ -68,6 +68,10 @@ class UserResourceTest {
 
     @Test
     void whenFindAllThenReturnAListOfUserDTO() {
+        /* Para mocar o mapper, ou melhor a tranformaçao do mapper no objeto
+        que é necessario, informa o metodo any, pois tras qualquer objeto para
+        ser tranformado em um objeto UserDTO.
+         */
         when(service.findAll()).thenReturn(List.of(user));
         when(mapper.map(any(),any())).thenReturn(userDTO);
 
@@ -87,6 +91,9 @@ class UserResourceTest {
 
     @Test
     void whenCreateThenReturnCreated() {
+        /* Neste caso é mocado o servico de criacao do usuario
+        onde passado qualquer objeto é obrigado a retorno um objeto user.
+         */
         when(service.create(any())).thenReturn(user);
 
         ResponseEntity response = resource.create(userDTO);
@@ -98,6 +105,10 @@ class UserResourceTest {
 
     @Test
     void whenUpdateThenReturnSucess() {
+        /* Para mocar a chamada utiliza o when, o objeto dessa classe vai
+        depender da construção original, neste caso precisou chamar o updte passando
+        o objeto userDTO e esperando que o retorno traga um objeto user.
+         */
         when(service.update(userDTO)).thenReturn(user);
         when(mapper.map(any(),any())).thenReturn(userDTO);
 
@@ -113,7 +124,20 @@ class UserResourceTest {
     }
 
     @Test
-    void delete() {
+    void whenDeleteThenReturnSuccess() {
+        /* Aqui eu estou mockando a chamada do método delete passando algum id,
+        que é a varivale que o método solicita, um Inteiro.
+        O doNothing é ppara casos em que o metodo é do tipo void, ou seja,
+        não há um retorno explicito
+         */
+        doNothing().when(service).delete(anyInt());
+        ResponseEntity<UserDTO> response = resource.delete(ID);
+
+        assertNotNull(response);
+        assertEquals(ResponseEntity.class,response.getClass());
+
+        assertEquals(HttpStatus.NO_CONTENT,response.getStatusCode());
+        verify(service, times(1)).delete(anyInt());
     }
 
     private void startUser(){
